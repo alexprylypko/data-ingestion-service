@@ -7,6 +7,7 @@ using TransactionApi.Application.Interfaces;
 using TransactionApi.Application.Queries;
 using TransactionApi.Application.Validators;
 using TransactionApi.Infrastructure.Data;
+using TransactionApi.Middleware;
 
 namespace TransactionApi;
 
@@ -54,6 +55,8 @@ public sealed class Startup
     /// <summary>Builds the HTTP request pipeline.</summary>
     public void Configure(WebApplication app, IWebHostEnvironment env)
     {
+        app.UseMiddleware<ExceptionHandlingMiddleware>();
+
         if (env.IsDevelopment())
         {
             app.UseSwagger();

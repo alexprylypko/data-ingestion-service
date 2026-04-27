@@ -47,15 +47,8 @@ public sealed class QueryController : ControllerBase
             SourceChannel = sourceChannel
         };
 
-        try
-        {
-            var result = await _customerTransactionsHandler.HandleAsync(query, ct);
-            return Ok(result);
-        }
-        catch (KeyNotFoundException)
-        {
-            return NotFound();
-        }
+        var result = await _customerTransactionsHandler.HandleAsync(query, ct);
+        return Ok(result);
     }
 
     /// <summary>Returns aggregate summary statistics across all ingested transactions.</summary>

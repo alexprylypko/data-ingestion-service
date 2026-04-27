@@ -1,5 +1,6 @@
 using TransactionApi.Application.DTOs;
 using TransactionApi.Application.Interfaces;
+using TransactionApi.Domain.Exceptions;
 
 namespace TransactionApi.Application.Queries;
 
@@ -24,7 +25,7 @@ public sealed class GetCustomerTransactionsQueryHandler
         var customer = await _customerRepository.GetByExternalIdAsync(query.CustomerId, ct);
         if (customer is null)
         {
-            throw new KeyNotFoundException($"Customer '{query.CustomerId}' was not found.");
+            throw new NotFoundException($"Customer '{query.CustomerId}' was not found.");
         }
 
         var (items, totalCount) = await _transactionRepository.GetByCustomerIdAsync(

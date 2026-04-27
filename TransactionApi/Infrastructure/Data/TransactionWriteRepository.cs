@@ -1,4 +1,6 @@
 using Dapper;
+using Npgsql;
+using TransactionApi.Domain.Exceptions;
 using TransactionApi.Application.Interfaces;
 using TransactionApi.Domain.Models;
 
@@ -55,6 +57,15 @@ public sealed class TransactionWriteRepository : ITransactionWriteRepository
             """;
 
         using var connection = _connectionFactory.CreateConnection();
-        await connection.ExecuteAsync(new CommandDefinition(sql, transaction, cancellationToken: ct));
+        try
+        {
+            await connection.ExecuteAsync(new CommandDefinition(sql, transaction, cancellationToken: ct));
+        }
+        catch (PostgresException exception) when (exception.SqlState == PostgresErrorCodes.UniqueViolation)
+        {
+            throw new DuplicateTransactionException(
+                $"Transaction '{transaction.ExternalTransactionId}' already exists.",
+                exception);
+        }
     }
 }
