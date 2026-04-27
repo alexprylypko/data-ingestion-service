@@ -60,7 +60,7 @@ public sealed class CsvTransactionRowValidator : AbstractValidator<CsvTransactio
         => DateTimeOffset.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out _);
 
     private static bool NotBeInFuture(string value)
-        => TryGetTransactionDate(value, out var parsed) && parsed <= DateTimeOffset.UtcNow.AddMinutes(1);
+        => TryGetTransactionDate(value, out var parsed) && parsed <= DateTimeOffset.UtcNow;
 
     private static bool NotBeOlderThanTenYears(string value)
         => TryGetTransactionDate(value, out var parsed) && parsed >= DateTimeOffset.UtcNow.AddYears(-10);

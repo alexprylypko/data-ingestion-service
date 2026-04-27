@@ -20,7 +20,7 @@ public sealed class TransactionInputDtoValidator : AbstractValidator<Transaction
         RuleFor(x => x.TransactionDate)
             .Must(static value => value != default)
             .WithMessage("Transaction date is required.")
-            .Must(static value => value <= DateTimeOffset.UtcNow.AddMinutes(1))
+            .Must(static value => value <= DateTimeOffset.UtcNow)
             .WithMessage("Transaction date cannot be in the future.")
             .Must(static value => value >= DateTimeOffset.UtcNow.AddYears(-10))
             .WithMessage("Transaction date cannot be older than 10 years.");
