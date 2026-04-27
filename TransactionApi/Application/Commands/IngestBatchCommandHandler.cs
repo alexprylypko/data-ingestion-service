@@ -1,3 +1,4 @@
+using System.Globalization;
 using FluentValidation;
 using TransactionApi.Application.DTOs;
 using TransactionApi.Application.Interfaces;
@@ -54,8 +55,8 @@ public sealed class IngestBatchCommandHandler
                 Id = Guid.NewGuid(),
                 CustomerId = customer.Id,
                 ExternalTransactionId = row.TransactionId,
-                TransactionDate = DateTimeOffset.Parse(row.TransactionDate),
-                Amount = decimal.Parse(row.Amount),
+                TransactionDate = DateTimeOffset.Parse(row.TransactionDate, CultureInfo.InvariantCulture),
+                Amount = decimal.Parse(row.Amount, CultureInfo.InvariantCulture),
                 Currency = row.Currency,
                 SourceChannel = row.SourceChannel,
                 CreatedAt = DateTimeOffset.UtcNow
