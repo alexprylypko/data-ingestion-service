@@ -1,4 +1,3 @@
-using System.Text;
 using Dapper;
 using TransactionApi.Application.DTOs;
 using TransactionApi.Application.Interfaces;
@@ -6,12 +5,16 @@ using TransactionApi.Domain.Models;
 
 namespace TransactionApi.Infrastructure.Data;
 
-/// <summary>Executes query-side transaction reads using Dapper and PostgreSQL.</summary>
+/// <summary>
+/// Executes query-side transaction reads using Dapper and PostgreSQL.
+/// </summary>
 public sealed class TransactionReadRepository : ITransactionReadRepository
 {
     private readonly IReadDbConnectionFactory _connectionFactory;
 
-    /// <summary>Initialises the repository with the read-side connection factory.</summary>
+    /// <summary>
+    /// Initializes the repository with the read-side connection factory.
+    /// </summary>
     public TransactionReadRepository(IReadDbConnectionFactory connectionFactory)
         => _connectionFactory = connectionFactory;
 
@@ -26,57 +29,18 @@ public sealed class TransactionReadRepository : ITransactionReadRepository
         string? sourceChannel,
         CancellationToken ct = default)
     {
-        var sql = new StringBuilder(
-            """
-            SELECT
-                id AS Id,
-                customer_id AS CustomerId,
-                external_transaction_id AS ExternalTransactionId,
-                transaction_date AS TransactionDate,
-                amount AS Amount,
-                currency AS Currency,
-                source_channel AS SourceChannel,
-                created_at AS CreatedAt,
-                COUNT(*) OVER() AS TotalCount
-            FROM transactions
-            WHERE customer_id = @CustomerId
-            """);
-
-        var parameters = new DynamicParameters();
-        parameters.Add("CustomerId", customerId);
-
-        if (fromDate.HasValue)
-        {
-            sql.AppendLine("AND transaction_date >= @FromDate");
-            parameters.Add("FromDate", fromDate.Value);
-        }
-
-        if (toDate.HasValue)
-        {
-            sql.AppendLine("AND transaction_date <= @ToDate");
-            parameters.Add("ToDate", toDate.Value);
-        }
-
-        if (!string.IsNullOrWhiteSpace(currency))
-        {
-            sql.AppendLine("AND currency = @Currency");
-            parameters.Add("Currency", currency);
-        }
-
-        if (!string.IsNullOrWhiteSpace(sourceChannel))
-        {
-            sql.AppendLine("AND source_channel = @SourceChannel");
-            parameters.Add("SourceChannel", sourceChannel);
-        }
-
-        sql.AppendLine("ORDER BY transaction_date DESC");
-        sql.AppendLine("LIMIT @PageSize OFFSET @Offset;");
-        parameters.Add("PageSize", pageSize);
-        parameters.Add("Offset", (page - 1) * pageSize);
+        var (sql, parameters) = TransactionReadRepositorySqlBuilder.BuildCustomerTransactionsQuery(
+            customerId,
+            page,
+            pageSize,
+            fromDate,
+            toDate,
+            currency,
+            sourceChannel);
 
         using var connection = _connectionFactory.CreateConnection();
         var rows = (await connection.QueryAsync<TransactionRow>(
-            new CommandDefinition(sql.ToString(), parameters, cancellationToken: ct))).ToList();
+            new CommandDefinition(sql, parameters, cancellationToken: ct))).ToList();
 
         return (
             rows.Select(static row => row.ToTransaction()),
