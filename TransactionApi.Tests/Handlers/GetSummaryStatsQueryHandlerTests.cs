@@ -30,6 +30,9 @@ public sealed class GetSummaryStatsQueryHandlerTests : IAsyncDisposable
 
         // Assert
         result.TotalTransactions.Should().Be(summary.TotalTransactions);
+        result.ByChannel.Should().ContainSingle(item => item.TotalAmount == summary.ByChannel.Single().TotalAmount);
+        result.ByCustomerCurrency.Should().ContainSingle(item => item.CustomerId == summary.ByCustomerCurrency.Single().CustomerId);
+        result.ByCustomerChannel.Should().ContainSingle(item => item.Channel == summary.ByCustomerChannel.Single().Channel);
     }
 
     /// <inheritdoc />

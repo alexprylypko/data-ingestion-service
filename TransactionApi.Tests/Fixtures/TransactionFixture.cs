@@ -86,7 +86,28 @@ public sealed class TransactionFixture : IAsyncDisposable
                 new ChannelBreakdown
                 {
                     Channel = "web",
-                    Count = 7
+                    Count = 7,
+                    TotalAmount = 582.48m
+                }
+            ],
+            ByCustomerCurrency =
+            [
+                new CustomerCurrencyBreakdown
+                {
+                    CustomerId = "CUST-001",
+                    Currency = "USD",
+                    Count = 5,
+                    TotalAmount = 421.05m
+                }
+            ],
+            ByCustomerChannel =
+            [
+                new CustomerChannelBreakdown
+                {
+                    CustomerId = "CUST-001",
+                    Channel = "web",
+                    Count = 3,
+                    TotalAmount = 220.10m
                 }
             ]
         };

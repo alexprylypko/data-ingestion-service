@@ -39,6 +39,16 @@ public sealed class TransactionSummaryStats
     /// Breakdown of stored transactions by source channel.
     /// </summary>
     public IReadOnlyCollection<ChannelBreakdown> ByChannel { get; set; } = Array.Empty<ChannelBreakdown>();
+
+    /// <summary>
+    /// Breakdown of stored transactions by customer and currency.
+    /// </summary>
+    public IReadOnlyCollection<CustomerCurrencyBreakdown> ByCustomerCurrency { get; set; } = Array.Empty<CustomerCurrencyBreakdown>();
+
+    /// <summary>
+    /// Breakdown of stored transactions by customer and source channel.
+    /// </summary>
+    public IReadOnlyCollection<CustomerChannelBreakdown> ByCustomerChannel { get; set; } = Array.Empty<CustomerChannelBreakdown>();
 }
 
 /// <summary>
@@ -77,4 +87,61 @@ public sealed class ChannelBreakdown
     /// Total number of transactions in the channel bucket.
     /// </summary>
     public int Count { get; set; }
+
+    /// <summary>
+    /// Total amount represented by the channel bucket.
+    /// </summary>
+    public decimal TotalAmount { get; set; }
+}
+
+/// <summary>
+/// Represents a customer-and-currency transaction summary.
+/// </summary>
+public sealed class CustomerCurrencyBreakdown
+{
+    /// <summary>
+    /// External customer identifier.
+    /// </summary>
+    public string CustomerId { get; set; } = string.Empty;
+
+    /// <summary>
+    /// ISO 4217 three-letter currency code.
+    /// </summary>
+    public string Currency { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Total number of transactions in the customer and currency bucket.
+    /// </summary>
+    public int Count { get; set; }
+
+    /// <summary>
+    /// Total amount represented by the customer and currency bucket.
+    /// </summary>
+    public decimal TotalAmount { get; set; }
+}
+
+/// <summary>
+/// Represents a customer-and-channel transaction summary.
+/// </summary>
+public sealed class CustomerChannelBreakdown
+{
+    /// <summary>
+    /// External customer identifier.
+    /// </summary>
+    public string CustomerId { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Source channel name.
+    /// </summary>
+    public string Channel { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Total number of transactions in the customer and channel bucket.
+    /// </summary>
+    public int Count { get; set; }
+
+    /// <summary>
+    /// Total amount represented by the customer and channel bucket.
+    /// </summary>
+    public decimal TotalAmount { get; set; }
 }

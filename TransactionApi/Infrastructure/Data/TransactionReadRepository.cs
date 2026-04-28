@@ -69,10 +69,31 @@ public sealed class TransactionReadRepository : ITransactionReadRepository
 
             SELECT
                 source_channel AS Channel,
-                COUNT(*) AS Count
+                COUNT(*) AS Count,
+                COALESCE(SUM(amount), 0) AS TotalAmount
             FROM transactions
             GROUP BY source_channel
             ORDER BY source_channel;
+
+            SELECT
+                c.external_id AS CustomerId,
+                t.currency AS Currency,
+                COUNT(*) AS Count,
+                COALESCE(SUM(t.amount), 0) AS TotalAmount
+            FROM transactions t
+            INNER JOIN customers c ON c.id = t.customer_id
+            GROUP BY c.external_id, t.currency
+            ORDER BY c.external_id, t.currency;
+
+            SELECT
+                c.external_id AS CustomerId,
+                t.source_channel AS Channel,
+                COUNT(*) AS Count,
+                COALESCE(SUM(t.amount), 0) AS TotalAmount
+            FROM transactions t
+            INNER JOIN customers c ON c.id = t.customer_id
+            GROUP BY c.external_id, t.source_channel
+            ORDER BY c.external_id, t.source_channel;
             """;
 
         using var connection = _connectionFactory.CreateConnection();
@@ -81,9 +102,13 @@ public sealed class TransactionReadRepository : ITransactionReadRepository
         var summary = await multi.ReadSingleAsync<TransactionSummaryStats>();
         var byCurrency = (await multi.ReadAsync<CurrencyBreakdown>()).ToArray();
         var byChannel = (await multi.ReadAsync<ChannelBreakdown>()).ToArray();
+        var byCustomerCurrency = (await multi.ReadAsync<CustomerCurrencyBreakdown>()).ToArray();
+        var byCustomerChannel = (await multi.ReadAsync<CustomerChannelBreakdown>()).ToArray();
 
         summary.ByCurrency = byCurrency;
         summary.ByChannel = byChannel;
+        summary.ByCustomerCurrency = byCustomerCurrency;
+        summary.ByCustomerChannel = byCustomerChannel;
         return summary;
     }
 
