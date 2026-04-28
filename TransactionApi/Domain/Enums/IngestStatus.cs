@@ -1,6 +1,8 @@
 namespace TransactionApi.Domain.Enums;
 
-/// <summary>Describes the outcome of an ingestion attempt.</summary>
+/// <summary>
+/// Describes the outcome of an ingestion attempt.
+/// </summary>
 public enum IngestStatus
 {
     /// <summary>

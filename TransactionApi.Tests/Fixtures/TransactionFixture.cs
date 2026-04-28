@@ -68,7 +68,6 @@ public sealed class TransactionFixture : IAsyncDisposable
         new()
         {
             TotalTransactions = 12,
-            TotalAmountUsd = 998.12m,
             UniqueCustomers = 3,
             OldestTransaction = DateTimeOffset.UtcNow.AddDays(-20),
             NewestTransaction = DateTimeOffset.UtcNow.AddDays(-1),

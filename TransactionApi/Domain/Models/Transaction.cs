@@ -1,6 +1,8 @@
 namespace TransactionApi.Domain.Models;
 
-/// <summary>Represents a financial transaction stored in the system.</summary>
+/// <summary>
+/// Represents a financial transaction stored in the system.
+/// </summary>
 public sealed class Transaction
 {
     /// <summary>

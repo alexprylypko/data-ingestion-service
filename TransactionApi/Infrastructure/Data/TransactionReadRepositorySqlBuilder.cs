@@ -111,7 +111,7 @@ internal static class TransactionReadRepositorySqlBuilder
             return;
         }
 
-        sql.AppendLine($"AND {TransactionDateColumn} >= @FromDate");
+        sql.AppendLine($" AND {TransactionDateColumn} >= @FromDate");
         parameters.Add("FromDate", fromDate.Value);
     }
 
@@ -122,7 +122,7 @@ internal static class TransactionReadRepositorySqlBuilder
             return;
         }
 
-        sql.AppendLine($"AND {TransactionDateColumn} <= @ToDate");
+        sql.AppendLine($" AND {TransactionDateColumn} <= @ToDate");
         parameters.Add("ToDate", toDate.Value);
     }
 
@@ -133,7 +133,7 @@ internal static class TransactionReadRepositorySqlBuilder
             return;
         }
 
-        sql.AppendLine($"AND {CurrencyColumn} = @Currency");
+        sql.AppendLine($" AND {CurrencyColumn} = @Currency");
         parameters.Add("Currency", currency);
     }
 
@@ -144,15 +144,15 @@ internal static class TransactionReadRepositorySqlBuilder
             return;
         }
 
-        sql.AppendLine($"AND {SourceChannelColumn} = @SourceChannel");
+        sql.AppendLine($" AND {SourceChannelColumn} = @SourceChannel");
         parameters.Add("SourceChannel", sourceChannel);
     }
 
     private static void AppendOrderByClause(StringBuilder sql)
-        => sql.AppendLine($"ORDER BY {TransactionDateColumn} DESC, {IdColumn} DESC");
+        => sql.AppendLine($" ORDER BY {TransactionDateColumn} DESC, {IdColumn} DESC");
 
     private static void AppendPaginationClause(StringBuilder sql)
-        => sql.AppendLine("LIMIT @PageSize OFFSET @Offset;");
+        => sql.AppendLine(" LIMIT @PageSize OFFSET @Offset;");
 
     private sealed record CustomerTransactionsFilters(
         int Page,

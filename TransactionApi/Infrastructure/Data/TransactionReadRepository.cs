@@ -53,7 +53,6 @@ public sealed class TransactionReadRepository : ITransactionReadRepository
         const string sql = """
             SELECT
                 COUNT(*) AS TotalTransactions,
-                COALESCE(SUM(amount), 0) AS TotalAmountUsd,
                 COUNT(DISTINCT customer_id) AS UniqueCustomers,
                 MIN(transaction_date) AS OldestTransaction,
                 MAX(transaction_date) AS NewestTransaction
@@ -81,7 +80,7 @@ public sealed class TransactionReadRepository : ITransactionReadRepository
                 COUNT(*) AS Count,
                 COALESCE(SUM(t.amount), 0) AS TotalAmount
             FROM transactions t
-            INNER JOIN customers c ON c.id = t.customer_id
+            LEFT JOIN customers c ON c.id = t.customer_id
             GROUP BY c.external_id, t.currency
             ORDER BY c.external_id, t.currency;
 
@@ -97,7 +96,7 @@ public sealed class TransactionReadRepository : ITransactionReadRepository
             """;
 
         using var connection = _connectionFactory.CreateConnection();
-        using var multi = await connection.QueryMultipleAsync(new CommandDefinition(sql, cancellationToken: ct));
+        await using var multi = await connection.QueryMultipleAsync(new CommandDefinition(sql, cancellationToken: ct));
 
         var summary = await multi.ReadSingleAsync<TransactionSummaryStats>();
         var byCurrency = (await multi.ReadAsync<CurrencyBreakdown>()).ToArray();

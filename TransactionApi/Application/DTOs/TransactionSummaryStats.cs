@@ -11,11 +11,6 @@ public sealed class TransactionSummaryStats
     public int TotalTransactions { get; set; }
 
     /// <summary>
-    /// Total monetary amount across all transactions.
-    /// </summary>
-    public decimal TotalAmountUsd { get; set; }
-
-    /// <summary>
     /// Total number of distinct customers with at least one transaction.
     /// </summary>
     public int UniqueCustomers { get; set; }

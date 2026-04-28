@@ -7,7 +7,7 @@ namespace TransactionApi.Infrastructure.Data;
 /// <summary>
 /// PostgreSQL implementation of <see cref="IWriteDbConnectionFactory"/>.
 /// This is the only class referencing <c>Npgsql</c> on the write path.
-/// Replace with a SQL Server or MySQL equivalent to switch providers.
+/// Replace it with a SQL Server or MySQL equivalent to switch providers.
 /// </summary>
 public sealed class PostgresWriteConnectionFactory : IWriteDbConnectionFactory
 {

@@ -1,6 +1,8 @@
 namespace TransactionApi.Domain.Models;
 
-/// <summary>Represents a customer that owns one or more ingested transactions.</summary>
+/// <summary>
+/// Represents a customer that owns one or more ingested transactions.
+/// </summary>
 public sealed class Customer
 {
     /// <summary>

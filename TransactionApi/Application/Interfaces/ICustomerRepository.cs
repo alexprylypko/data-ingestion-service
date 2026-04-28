@@ -7,13 +7,22 @@ namespace TransactionApi.Application.Interfaces;
 /// </summary>
 public interface ICustomerRepository
 {
-    /// <summary>
-    /// Returns the customer whose <c>external_id</c> matches <paramref name="externalId"/>, or <c>null</c>.
-    /// </summary>
-    Task<Customer?> GetByExternalIdAsync(string externalId, CancellationToken ct = default);
+  /// <summary>
+  /// Returns the customer whose <c>external_id</c> matches <paramref name="externalId"/>, or <c>null</c>.
+  /// </summary>
+  Task<Customer?> GetByExternalIdAsync(string externalId, CancellationToken ct = default);
 
-    /// <summary>
-    /// Returns the existing customer or creates and returns a new one atomically.
-    /// </summary>
-    Task<Customer> GetOrCreateAsync(string externalId, CancellationToken ct = default);
+  /// <summary>
+  /// Returns the existing customer or creates and returns a new one atomically.
+  /// </summary>
+  Task<Customer> GetOrCreateAsync(string externalId, CancellationToken ct = default);
+
+  /// <summary>
+  /// Upserts all customers identified by <paramref name="externalIds"/> in one round-trip
+  /// and returns a map of external ID → internal <see cref="Customer"/>.
+  /// Used by batch ingestion to avoid N individual GetOrCreate calls.
+  /// </summary>
+  Task<IReadOnlyDictionary<string, Customer>> BulkGetOrCreateAsync(
+    IEnumerable<string> externalIds,
+    CancellationToken ct = default);
 }
