@@ -7,14 +7,18 @@ using TransactionApi.Domain.Models;
 
 namespace TransactionApi.Application.Commands;
 
-/// <summary>Handles streamed batch ingestion of CSV transaction rows.</summary>
+/// <summary>
+/// Handles streamed batch ingestion of CSV transaction rows.
+/// </summary>
 public sealed class IngestBatchCommandHandler
 {
     private readonly ICustomerRepository _customerRepository;
     private readonly ITransactionWriteRepository _transactionRepository;
     private readonly IValidator<CsvTransactionRow> _validator;
 
-    /// <summary>Initialises the handler with its required repositories and validator.</summary>
+    /// <summary>
+    /// Initializes the handler with its required repositories and validator.
+    /// </summary>
     public IngestBatchCommandHandler(
         ITransactionWriteRepository transactionRepository,
         ICustomerRepository customerRepository,
@@ -25,7 +29,9 @@ public sealed class IngestBatchCommandHandler
         _validator = validator;
     }
 
-    /// <summary>Streams, validates, deduplicates, and persists batch transaction rows.</summary>
+    /// <summary>
+    /// Streams, validates, deduplicates, and persists batch transaction rows.
+    /// </summary>
     public async Task<BatchIngestResult> HandleAsync(IngestBatchCommand command, CancellationToken ct = default)
     {
         var result = new BatchIngestResult();

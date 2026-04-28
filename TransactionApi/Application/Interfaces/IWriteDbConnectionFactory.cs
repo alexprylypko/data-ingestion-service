@@ -8,6 +8,7 @@ namespace TransactionApi.Application.Interfaces;
 /// </summary>
 public interface IWriteDbConnectionFactory
 {
-    /// <summary>Opens and returns a new write-side <see cref="IDbConnection"/>.</summary>
+    /// <summary>
+    /// Opens and returns a new write-side <see cref="IDbConnection"/>.</summary>
     IDbConnection CreateConnection();
 }

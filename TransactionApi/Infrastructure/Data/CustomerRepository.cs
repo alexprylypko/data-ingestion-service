@@ -4,12 +4,16 @@ using TransactionApi.Domain.Models;
 
 namespace TransactionApi.Infrastructure.Data;
 
-/// <summary>Provides customer persistence using the primary PostgreSQL endpoint.</summary>
+/// <summary>
+/// Provides customer persistence using the primary PostgreSQL endpoint.
+/// </summary>
 public sealed class CustomerRepository : ICustomerRepository
 {
     private readonly IWriteDbConnectionFactory _connectionFactory;
 
-    /// <summary>Initialises the repository with the write-side connection factory.</summary>
+    /// <summary>
+    /// Initialises the repository with the write-side connection factory.
+    /// </summary>
     public CustomerRepository(IWriteDbConnectionFactory connectionFactory)
         => _connectionFactory = connectionFactory;
 

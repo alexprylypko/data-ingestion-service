@@ -6,12 +6,16 @@ using TransactionApi.Domain.Models;
 
 namespace TransactionApi.Infrastructure.Data;
 
-/// <summary>Persists transaction command-side data using Dapper and PostgreSQL.</summary>
+/// <summary>
+/// Persists transaction command-side data using Dapper and PostgreSQL.
+/// </summary>
 public sealed class TransactionWriteRepository : ITransactionWriteRepository
 {
     private readonly IWriteDbConnectionFactory _connectionFactory;
 
-    /// <summary>Initialises the repository with the write-side connection factory.</summary>
+    /// <summary>
+    /// Initializes the repository with the write-side connection factory.
+    /// </summary>
     public TransactionWriteRepository(IWriteDbConnectionFactory connectionFactory)
         => _connectionFactory = connectionFactory;
 

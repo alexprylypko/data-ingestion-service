@@ -13,7 +13,9 @@ public sealed class PostgresWriteConnectionFactory : IWriteDbConnectionFactory
 {
     private readonly string _connectionString;
 
-    /// <summary>Initialises the factory with the primary write connection string.</summary>
+    /// <summary>
+    /// Initializes the factory with the primary write connection string.
+    /// </summary>
     public PostgresWriteConnectionFactory(string connectionString)
         => _connectionString = connectionString;
 

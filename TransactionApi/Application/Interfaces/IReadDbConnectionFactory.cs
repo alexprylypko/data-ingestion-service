@@ -8,6 +8,8 @@ namespace TransactionApi.Application.Interfaces;
 /// </summary>
 public interface IReadDbConnectionFactory
 {
-    /// <summary>Opens and returns a new read-side <see cref="IDbConnection"/>.</summary>
+    /// <summary>
+    /// Opens and returns a new read-side <see cref="IDbConnection"/>.
+    /// </summary>
     IDbConnection CreateConnection();
 }

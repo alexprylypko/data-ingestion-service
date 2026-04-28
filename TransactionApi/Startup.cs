@@ -11,16 +11,22 @@ using TransactionApi.Middleware;
 
 namespace TransactionApi;
 
-/// <summary>Configures services and the HTTP pipeline for the Transaction API.</summary>
+/// <summary>
+/// Configures services and the HTTP pipeline for the Transaction API.
+/// </summary>
 public sealed class Startup
 {
     private readonly IConfiguration _configuration;
 
-    /// <summary>Initialises <see cref="Startup"/> with the resolved application configuration.</summary>
+    /// <summary>
+    /// Initializes <see cref="Startup"/> with the resolved application configuration.
+    /// </summary>
     public Startup(IConfiguration configuration)
         => _configuration = configuration;
 
-    /// <summary>Registers all application services into the DI container.</summary>
+    /// <summary>
+    /// Registers all application services into the DI container.
+    /// </summary>
     public void ConfigureServices(IServiceCollection services, IWebHostBuilder webHostBuilder)
     {
         var writeCs = _configuration.GetConnectionString("WriteConnection")
@@ -52,7 +58,9 @@ public sealed class Startup
         services.Configure<FormOptions>(options => options.MultipartBodyLengthLimit = 104_857_600);
     }
 
-    /// <summary>Builds the HTTP request pipeline.</summary>
+    /// <summary>
+    /// Builds the HTTP request pipeline.
+    /// </summary>
     public void Configure(WebApplication app, IWebHostEnvironment env)
     {
         app.UseMiddleware<ExceptionHandlingMiddleware>();

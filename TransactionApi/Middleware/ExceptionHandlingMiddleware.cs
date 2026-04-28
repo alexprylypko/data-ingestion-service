@@ -5,20 +5,26 @@ using TransactionApi.Domain.Exceptions;
 
 namespace TransactionApi.Middleware;
 
-/// <summary>Handles application exceptions and converts them into consistent JSON error responses.</summary>
+/// <summary>
+/// Handles application exceptions and converts them into consistent JSON error responses.
+/// </summary>
 public sealed class ExceptionHandlingMiddleware
 {
     private readonly ILogger<ExceptionHandlingMiddleware> _logger;
     private readonly RequestDelegate _next;
 
-    /// <summary>Initialises the middleware with the next pipeline delegate and logger.</summary>
+    /// <summary>
+    /// Initializes the middleware with the next pipeline delegate and logger.
+    /// </summary>
     public ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
     {
         _next = next;
         _logger = logger;
     }
 
-    /// <summary>Executes the middleware for the current HTTP request.</summary>
+    /// <summary>
+    /// Executes the middleware for the current HTTP request.
+    /// </summary>
     public async Task InvokeAsync(HttpContext context)
     {
         try

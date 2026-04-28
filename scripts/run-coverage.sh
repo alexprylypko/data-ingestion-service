@@ -40,3 +40,4 @@ echo
 cat "$REPORT_DIR/Summary.txt"
 echo
 echo "HTML report -> $REPORT_DIR/index.html"
+open "$REPORT_DIR/index.html"

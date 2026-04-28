@@ -13,7 +13,9 @@ public sealed class PostgresReadConnectionFactory : IReadDbConnectionFactory
 {
     private readonly string _connectionString;
 
-    /// <summary>Initialises the factory with the read-replica connection string.</summary>
+    /// <summary>
+    /// Initializes the factory with the read-replica connection string.
+    /// </summary>
     public PostgresReadConnectionFactory(string connectionString)
         => _connectionString = connectionString;
 

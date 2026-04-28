@@ -3,10 +3,14 @@ using TransactionApi.Application.DTOs;
 
 namespace TransactionApi.Application.Validators;
 
-/// <summary>Validates a real-time transaction ingestion request.</summary>
+/// <summary>
+/// Validates a real-time transaction ingestion request.
+/// </summary>
 public sealed class TransactionInputDtoValidator : AbstractValidator<TransactionInputDto>
 {
-    /// <summary>Initialises the validator with all supported transaction field rules.</summary>
+    /// <summary>
+    /// Initializes the validator with all supported transaction field rules.
+    /// </summary>
     public TransactionInputDtoValidator()
     {
         RuleFor(x => x.CustomerId)

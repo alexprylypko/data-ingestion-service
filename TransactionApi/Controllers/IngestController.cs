@@ -8,7 +8,8 @@ using TransactionApi.Domain.Enums;
 
 namespace TransactionApi.Controllers;
 
-/// <summary>Exposes transaction ingestion endpoints for real-time and batch workflows.</summary>
+/// <summary>
+/// Exposes transaction ingestion endpoints for real-time and batch workflows.</summary>
 [ApiController]
 [Route("ingest")]
 public sealed class IngestController : ControllerBase
@@ -17,7 +18,9 @@ public sealed class IngestController : ControllerBase
     private readonly IngestBatchCommandHandler _batchHandler;
     private readonly IngestTransactionCommandHandler _transactionHandler;
 
-    /// <summary>Initialises the controller with the ingestion handlers it coordinates.</summary>
+    /// <summary>
+    /// Initializes the controller with the ingestion handlers it coordinates.
+    /// </summary>
     public IngestController(
         IngestTransactionCommandHandler transactionHandler,
         IngestBatchCommandHandler batchHandler)
@@ -26,7 +29,9 @@ public sealed class IngestController : ControllerBase
         _batchHandler = batchHandler;
     }
 
-    /// <summary>Accepts and ingests a single transaction submitted as JSON.</summary>
+    /// <summary>
+    /// Accepts and ingests a single transaction submitted as JSON.
+    /// </summary>
     [HttpPost("transaction")]
     [ProducesResponseType(typeof(RowIngestResult), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
@@ -52,7 +57,9 @@ public sealed class IngestController : ControllerBase
         });
     }
 
-    /// <summary>Accepts and ingests a streamed CSV batch without loading the file into memory.</summary>
+    /// <summary>
+    /// Accepts and ingests a streamed CSV batch without loading the file into memory.
+    /// </summary>
     [HttpPost("batch")]
     [Consumes("multipart/form-data")]
     [ProducesResponseType(typeof(BatchIngestResult), StatusCodes.Status200OK)]

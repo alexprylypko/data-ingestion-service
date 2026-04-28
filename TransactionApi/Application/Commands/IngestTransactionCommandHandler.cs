@@ -6,14 +6,18 @@ using TransactionApi.Domain.Models;
 
 namespace TransactionApi.Application.Commands;
 
-/// <summary>Handles ingestion of a single transaction submitted through the real-time endpoint.</summary>
+/// <summary>
+/// Handles ingestion of a single transaction submitted through the real-time endpoint.
+/// </summary>
 public sealed class IngestTransactionCommandHandler
 {
     private readonly ICustomerRepository _customerRepository;
     private readonly ITransactionWriteRepository _transactionRepository;
     private readonly IValidator<TransactionInputDto> _validator;
 
-    /// <summary>Initialises the handler with its required repositories and validator.</summary>
+    /// <summary>
+    /// Initializes the handler with its required repositories and validator.
+    /// </summary>
     public IngestTransactionCommandHandler(
         ITransactionWriteRepository transactionRepository,
         ICustomerRepository customerRepository,
@@ -24,7 +28,9 @@ public sealed class IngestTransactionCommandHandler
         _validator = validator;
     }
 
-    /// <summary>Validates, deduplicates, and persists a single transaction request.</summary>
+    /// <summary>
+    /// Validates, deduplicates, and persists a single transaction request.
+    /// </summary>
     public async Task<RowIngestResult> HandleAsync(IngestTransactionCommand command, CancellationToken ct = default)
     {
         var validation = await _validator.ValidateAsync(command.Transaction, ct);

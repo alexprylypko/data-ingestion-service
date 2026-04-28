@@ -4,13 +4,17 @@ using TransactionApi.Domain.Exceptions;
 
 namespace TransactionApi.Application.Queries;
 
-/// <summary>Handles paginated transaction queries for a specific customer.</summary>
+/// <summary>
+/// Handles paginated transaction queries for a specific customer.
+/// </summary>
 public sealed class GetCustomerTransactionsQueryHandler
 {
     private readonly ICustomerRepository _customerRepository;
     private readonly ITransactionReadRepository _transactionRepository;
 
-    /// <summary>Initialises the handler with the repositories required to resolve and query customer transactions.</summary>
+    /// <summary>
+    /// Initializes the handler with the repositories required to resolve and query customer transactions.
+    /// </summary>
     public GetCustomerTransactionsQueryHandler(
         ITransactionReadRepository transactionRepository,
         ICustomerRepository customerRepository)
@@ -19,7 +23,9 @@ public sealed class GetCustomerTransactionsQueryHandler
         _customerRepository = customerRepository;
     }
 
-    /// <summary>Returns a paginated transaction list for the requested external customer identifier.</summary>
+    /// <summary>
+    /// Returns a paginated transaction list for the requested external customer identifier.
+    /// </summary>
     public async Task<PagedResult<TransactionDto>> HandleAsync(GetCustomerTransactionsQuery query, CancellationToken ct = default)
     {
         var customer = await _customerRepository.GetByExternalIdAsync(query.CustomerId, ct);

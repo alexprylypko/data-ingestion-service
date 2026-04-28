@@ -4,10 +4,14 @@ using TransactionApi.Application.DTOs;
 
 namespace TransactionApi.Application.Validators;
 
-/// <summary>Validates a CSV transaction row before it is transformed into a domain transaction.</summary>
+/// <summary>
+/// Validates a CSV transaction row before it is transformed into a domain transaction.
+/// </summary>
 public sealed class CsvTransactionRowValidator : AbstractValidator<CsvTransactionRow>
 {
-    /// <summary>Initialises the validator with all supported CSV field rules.</summary>
+    /// <summary>
+    /// Initializes the validator with all supported CSV field rules.
+    /// </summary>
     public CsvTransactionRowValidator()
     {
         RuleFor(x => x.CustomerId)

@@ -3,14 +3,18 @@ using TransactionApi.Application.Queries;
 
 namespace TransactionApi.Controllers;
 
-/// <summary>Exposes read-only query endpoints for customers and aggregate transaction statistics.</summary>
+/// <summary>
+/// Exposes read-only query endpoints for customers and aggregate transaction statistics.
+/// </summary>
 [ApiController]
 public sealed class QueryController : ControllerBase
 {
     private readonly GetCustomerTransactionsQueryHandler _customerTransactionsHandler;
     private readonly GetSummaryStatsQueryHandler _summaryStatsHandler;
 
-    /// <summary>Initialises the controller with the query handlers it coordinates.</summary>
+    /// <summary>
+    /// Initializes the controller with the query handlers it coordinates.
+    /// </summary>
     public QueryController(
         GetCustomerTransactionsQueryHandler customerTransactionsHandler,
         GetSummaryStatsQueryHandler summaryStatsHandler)
@@ -19,7 +23,8 @@ public sealed class QueryController : ControllerBase
         _summaryStatsHandler = summaryStatsHandler;
     }
 
-    /// <summary>Returns a paginated list of transactions for the supplied external customer identifier.</summary>
+    /// <summary>
+    /// Returns a paginated list of transactions for the supplied external customer identifier.</summary>
     [HttpGet("customers/{id}/transactions")]
     public async Task<IActionResult> GetCustomerTransactions(
         string id,
@@ -51,7 +56,9 @@ public sealed class QueryController : ControllerBase
         return Ok(result);
     }
 
-    /// <summary>Returns aggregate summary statistics across all ingested transactions.</summary>
+    /// <summary>
+    /// Returns aggregate summary statistics across all ingested transactions.
+    /// </summary>
     [HttpGet("stats/summary")]
     public async Task<IActionResult> GetSummaryStats(CancellationToken ct)
     {
