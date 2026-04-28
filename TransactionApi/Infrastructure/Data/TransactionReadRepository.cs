@@ -21,12 +21,12 @@ public sealed class TransactionReadRepository : ITransactionReadRepository
     /// <inheritdoc />
     public async Task<(IEnumerable<Transaction> Items, int TotalCount)> GetByCustomerIdAsync(
         Guid customerId,
-        int page,
-        int pageSize,
-        DateTimeOffset? fromDate,
-        DateTimeOffset? toDate,
-        string? currency,
-        string? sourceChannel,
+        int page = 1,
+        int pageSize = 20,
+        DateTimeOffset? fromDate = null,
+        DateTimeOffset? toDate = null,
+        string? currency = null,
+        string? sourceChannel = null,
         CancellationToken ct = default)
     {
         var (sql, parameters) = TransactionReadRepositorySqlBuilder.BuildCustomerTransactionsQuery(

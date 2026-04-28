@@ -8,6 +8,9 @@ namespace TransactionApi.Infrastructure.Data;
 /// </summary>
 internal static class TransactionReadRepositorySqlBuilder
 {
+    private const int DefaultPage = 1;
+    private const int DefaultPageSize = 20;
+    private const int DefaultLookbackMonths = 3;
     private const string IdColumn = "id";
     private const string CustomerIdColumn = "customer_id";
     private const string ExternalTransactionIdColumn = "external_transaction_id";
@@ -37,6 +40,7 @@ internal static class TransactionReadRepositorySqlBuilder
         string? currency,
         string? sourceChannel)
     {
+        var normalizedFilters = NormalizeFilters(page, pageSize, fromDate, toDate, currency, sourceChannel);
         var sql = new StringBuilder(
             $"""
             SELECT
@@ -53,17 +57,43 @@ internal static class TransactionReadRepositorySqlBuilder
             WHERE {CustomerIdColumn} = @CustomerId
             """);
 
-        var parameters = CreateBaseCustomerTransactionsParameters(customerId, page, pageSize);
+        var parameters = CreateBaseCustomerTransactionsParameters(
+            customerId,
+            normalizedFilters.Page,
+            normalizedFilters.PageSize);
 
-        AppendFromDateFilter(sql, parameters, fromDate);
-        AppendToDateFilter(sql, parameters, toDate);
-        AppendCurrencyFilter(sql, parameters, currency);
-        AppendSourceChannelFilter(sql, parameters, sourceChannel);
+        AppendFromDateFilter(sql, parameters, normalizedFilters.FromDate);
+        AppendToDateFilter(sql, parameters, normalizedFilters.ToDate);
+        AppendCurrencyFilter(sql, parameters, normalizedFilters.Currency);
+        AppendSourceChannelFilter(sql, parameters, normalizedFilters.SourceChannel);
         AppendOrderByClause(sql);
         AppendPaginationClause(sql);
 
         return (sql.ToString(), parameters);
     }
+
+    private static CustomerTransactionsFilters NormalizeFilters(
+        int page,
+        int pageSize,
+        DateTimeOffset? fromDate,
+        DateTimeOffset? toDate,
+        string? currency,
+        string? sourceChannel)
+    {
+        var effectiveToDate = toDate ?? DateTimeOffset.UtcNow;
+        var effectiveFromDate = fromDate ?? effectiveToDate.AddMonths(-DefaultLookbackMonths);
+
+        return new CustomerTransactionsFilters(
+            page > 0 ? page : DefaultPage,
+            pageSize > 0 ? pageSize : DefaultPageSize,
+            effectiveFromDate,
+            effectiveToDate,
+            NormalizeOptionalFilter(currency),
+            NormalizeOptionalFilter(sourceChannel));
+    }
+
+    private static string? NormalizeOptionalFilter(string? value) =>
+        string.IsNullOrWhiteSpace(value) ? null : value;
 
     private static DynamicParameters CreateBaseCustomerTransactionsParameters(Guid customerId, int page, int pageSize)
     {
@@ -123,4 +153,12 @@ internal static class TransactionReadRepositorySqlBuilder
 
     private static void AppendPaginationClause(StringBuilder sql)
         => sql.AppendLine("LIMIT @PageSize OFFSET @Offset;");
+
+    private sealed record CustomerTransactionsFilters(
+        int Page,
+        int PageSize,
+        DateTimeOffset FromDate,
+        DateTimeOffset ToDate,
+        string? Currency,
+        string? SourceChannel);
 }
