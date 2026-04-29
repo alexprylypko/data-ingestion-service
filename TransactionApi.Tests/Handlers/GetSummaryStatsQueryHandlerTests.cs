@@ -23,10 +23,15 @@ public sealed class GetSummaryStatsQueryHandlerTests : IAsyncDisposable
         // Arrange
         var summary = _fixture.CreateSummaryStats();
         var handler = new GetSummaryStatsQueryHandler(_transactionRepositoryMock.Object);
-        _transactionRepositoryMock.Setup(repo => repo.GetSummaryStatsAsync(It.IsAny<CancellationToken>())).ReturnsAsync(summary);
+        _transactionRepositoryMock
+            .Setup(repo => repo.GetSummaryStatsAsync(true, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(summary);
 
         // Act
-        var result = await handler.HandleAsync(new GetSummaryStatsQuery());
+        var result = await handler.HandleAsync(new GetSummaryStatsQuery
+        {
+            IncludeCustomerBreakdowns = true
+        });
 
         // Assert
         result.TotalTransactions.Should().Be(summary.TotalTransactions);

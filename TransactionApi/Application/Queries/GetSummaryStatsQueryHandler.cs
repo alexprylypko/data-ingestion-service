@@ -20,5 +20,5 @@ public sealed class GetSummaryStatsQueryHandler
     /// Returns aggregate transaction summary statistics.
     /// </summary>
     public Task<TransactionSummaryStats> HandleAsync(GetSummaryStatsQuery query, CancellationToken ct = default)
-        => _transactionRepository.GetSummaryStatsAsync(ct);
+        => _transactionRepository.GetSummaryStatsAsync(query.IncludeCustomerBreakdowns, ct);
 }

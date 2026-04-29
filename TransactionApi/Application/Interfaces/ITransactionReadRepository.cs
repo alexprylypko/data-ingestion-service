@@ -24,5 +24,7 @@ public interface ITransactionReadRepository
     /// <summary>
     /// Returns aggregate statistics across all ingested transactions.
     /// </summary>
-    Task<TransactionSummaryStats> GetSummaryStatsAsync(CancellationToken ct = default);
+    Task<TransactionSummaryStats> GetSummaryStatsAsync(
+        bool includeCustomerBreakdowns = false,
+        CancellationToken ct = default);
 }

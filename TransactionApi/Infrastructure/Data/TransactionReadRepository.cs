@@ -48,7 +48,9 @@ public sealed class TransactionReadRepository : ITransactionReadRepository
     }
 
     /// <inheritdoc />
-    public async Task<TransactionSummaryStats> GetSummaryStatsAsync(CancellationToken ct = default)
+    public async Task<TransactionSummaryStats> GetSummaryStatsAsync(
+        bool includeCustomerBreakdowns = false,
+        CancellationToken ct = default)
     {
         const string sql = """
             SELECT
@@ -73,14 +75,16 @@ public sealed class TransactionReadRepository : ITransactionReadRepository
             FROM transactions
             GROUP BY source_channel
             ORDER BY source_channel;
+            """;
 
+        const string customerBreakdownsSql = """
             SELECT
                 c.external_id AS CustomerId,
                 t.currency AS Currency,
                 COUNT(*) AS Count,
                 COALESCE(SUM(t.amount), 0) AS TotalAmount
             FROM transactions t
-            LEFT JOIN customers c ON c.id = t.customer_id
+            INNER JOIN customers c ON c.id = t.customer_id
             GROUP BY c.external_id, t.currency
             ORDER BY c.external_id, t.currency;
 
@@ -101,13 +105,20 @@ public sealed class TransactionReadRepository : ITransactionReadRepository
         var summary = await multi.ReadSingleAsync<TransactionSummaryStats>();
         var byCurrency = (await multi.ReadAsync<CurrencyBreakdown>()).ToArray();
         var byChannel = (await multi.ReadAsync<ChannelBreakdown>()).ToArray();
-        var byCustomerCurrency = (await multi.ReadAsync<CustomerCurrencyBreakdown>()).ToArray();
-        var byCustomerChannel = (await multi.ReadAsync<CustomerChannelBreakdown>()).ToArray();
 
         summary.ByCurrency = byCurrency;
         summary.ByChannel = byChannel;
-        summary.ByCustomerCurrency = byCustomerCurrency;
-        summary.ByCustomerChannel = byCustomerChannel;
+
+        if (!includeCustomerBreakdowns)
+        {
+            return summary;
+        }
+
+        await using var customerBreakdownsMulti = await connection.QueryMultipleAsync(
+            new CommandDefinition(customerBreakdownsSql, cancellationToken: ct));
+        summary.ByCustomerCurrency = (await customerBreakdownsMulti.ReadAsync<CustomerCurrencyBreakdown>()).ToArray();
+        summary.ByCustomerChannel = (await customerBreakdownsMulti.ReadAsync<CustomerChannelBreakdown>()).ToArray();
+
         return summary;
     }
 

@@ -60,9 +60,15 @@ public sealed class QueryController : ControllerBase
     /// Returns aggregate summary statistics across all ingested transactions.
     /// </summary>
     [HttpGet("stats/summary")]
-    public async Task<IActionResult> GetSummaryStats(CancellationToken ct)
+    public async Task<IActionResult> GetSummaryStats([FromQuery] bool includeCustomerBreakdowns = false, CancellationToken ct = default)
     {
-        var result = await _summaryStatsHandler.HandleAsync(new GetSummaryStatsQuery(), ct);
+        var result = await _summaryStatsHandler.HandleAsync(
+            new GetSummaryStatsQuery
+            {
+                IncludeCustomerBreakdowns = includeCustomerBreakdowns
+            },
+            ct);
+
         return Ok(result);
     }
 }
