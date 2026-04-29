@@ -31,15 +31,22 @@ public sealed class Startup
     public void Configure(WebApplication app, IWebHostEnvironment env)
     {
         app.UseMiddleware<ExceptionHandlingMiddleware>();
+        app.UseSwagger();
+        app.UseSwaggerUI();
 
-        if (env.IsDevelopment())
+        if (HasHttpsBinding(app.Configuration))
         {
-            app.UseSwagger();
-            app.UseSwaggerUI();
+            app.UseHttpsRedirection();
         }
 
-        app.UseHttpsRedirection();
         app.UseAuthorization();
         app.MapControllers();
+    }
+
+    private static bool HasHttpsBinding(IConfiguration configuration)
+    {
+        var urls = configuration["ASPNETCORE_URLS"];
+        return !string.IsNullOrWhiteSpace(urls)
+               && urls.Contains("https://", StringComparison.OrdinalIgnoreCase);
     }
 }
