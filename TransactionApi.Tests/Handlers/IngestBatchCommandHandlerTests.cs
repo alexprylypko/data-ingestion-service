@@ -35,12 +35,8 @@ public sealed class IngestBatchCommandHandlerTests : IAsyncDisposable
         var customerTwo = _fixture.CreateCustomer(rowTwo.CustomerId);
         var customerThree = _fixture.CreateCustomer(rowThree.CustomerId);
         var handler = CreateHandler();
-        SetupMissingTransaction(rowOne.TransactionId);
-        SetupMissingTransaction(rowTwo.TransactionId);
-        SetupMissingTransaction(rowThree.TransactionId);
-        SetupCustomer(rowOne.CustomerId, customerOne);
-        SetupCustomer(rowTwo.CustomerId, customerTwo);
-        SetupCustomer(rowThree.CustomerId, customerThree);
+        SetupExistingIds();
+        SetupBulkCustomers((customerOne, customerOne.ExternalId), (customerTwo, customerTwo.ExternalId), (customerThree, customerThree.ExternalId));
 
         // Act
         var result = await handler.HandleAsync(new IngestBatchCommand(_fixture.CreateAsyncRows(rowOne, rowTwo, rowThree)));
@@ -70,11 +66,8 @@ public sealed class IngestBatchCommandHandlerTests : IAsyncDisposable
         var customerOne = _fixture.CreateCustomer(rowOne.CustomerId);
         var customerTwo = _fixture.CreateCustomer(rowTwo.CustomerId);
         var handler = CreateHandler();
-        SetupMissingTransaction(rowOne.TransactionId);
-        SetupMissingTransaction(rowTwo.TransactionId);
-        _transactionRepositoryMock.Setup(repo => repo.ExistsAsync(rowThree.TransactionId, It.IsAny<CancellationToken>())).ReturnsAsync(true);
-        SetupCustomer(rowOne.CustomerId, customerOne);
-        SetupCustomer(rowTwo.CustomerId, customerTwo);
+        SetupExistingIds(rowThree.TransactionId);
+        SetupBulkCustomers((customerOne, customerOne.ExternalId), (customerTwo, customerTwo.ExternalId));
 
         // Act
         var result = await handler.HandleAsync(new IngestBatchCommand(_fixture.CreateAsyncRows(rowOne, rowTwo, rowThree)));
@@ -105,10 +98,8 @@ public sealed class IngestBatchCommandHandlerTests : IAsyncDisposable
         var customerOne = _fixture.CreateCustomer(rowOne.CustomerId);
         var customerTwo = _fixture.CreateCustomer(rowTwo.CustomerId);
         var handler = CreateHandler();
-        SetupMissingTransaction(rowOne.TransactionId);
-        SetupMissingTransaction(rowTwo.TransactionId);
-        SetupCustomer(rowOne.CustomerId, customerOne);
-        SetupCustomer(rowTwo.CustomerId, customerTwo);
+        SetupExistingIds();
+        SetupBulkCustomers((customerOne, customerOne.ExternalId), (customerTwo, customerTwo.ExternalId));
 
         // Act
         var result = await handler.HandleAsync(new IngestBatchCommand(_fixture.CreateAsyncRows(rowOne, rowTwo, rowThree)));
@@ -154,15 +145,18 @@ public sealed class IngestBatchCommandHandlerTests : IAsyncDisposable
         // Arrange
         var rows = _fixture.CreateLargeValidBatch(1000);
         var handler = CreateHandler();
-        _transactionRepositoryMock.Setup(repo => repo.ExistsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(false);
-        _customerRepositoryMock.Setup(repo => repo.GetOrCreateAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync((string customerId, CancellationToken _) => _fixture.CreateCustomer(customerId));
+        SetupExistingIds();
+        _customerRepositoryMock
+            .Setup(repo => repo.BulkGetOrCreateAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((IEnumerable<string> customerIds, CancellationToken _) =>
+                customerIds.Distinct().ToDictionary(customerId => customerId, customerId => _fixture.CreateCustomer(customerId)));
 
         // Act
         var result = await handler.HandleAsync(new IngestBatchCommand(rows));
 
         // Assert
         result.AcceptedCount.Should().Be(1000);
-        _transactionRepositoryMock.Verify(repo => repo.InsertAsync(It.IsAny<Transaction>(), It.IsAny<CancellationToken>()), Times.Exactly(1000));
+        _transactionRepositoryMock.Verify(repo => repo.BulkInsertAsync(It.Is<IReadOnlyCollection<Transaction>>(items => items.Count == 500), It.IsAny<CancellationToken>()), Times.Exactly(2));
     }
 
     /// <inheritdoc />
@@ -171,9 +165,13 @@ public sealed class IngestBatchCommandHandlerTests : IAsyncDisposable
     private IngestBatchCommandHandler CreateHandler() =>
         new(_transactionRepositoryMock.Object, _customerRepositoryMock.Object, _validator);
 
-    private void SetupMissingTransaction(string transactionId) =>
-        _transactionRepositoryMock.Setup(repo => repo.ExistsAsync(transactionId, It.IsAny<CancellationToken>())).ReturnsAsync(false);
+    private void SetupExistingIds(params string[] existingIds) =>
+        _transactionRepositoryMock
+            .Setup(repo => repo.GetExistingIdsAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new HashSet<string>(existingIds, StringComparer.Ordinal));
 
-    private void SetupCustomer(string customerId, Customer customer) =>
-        _customerRepositoryMock.Setup(repo => repo.GetOrCreateAsync(customerId, It.IsAny<CancellationToken>())).ReturnsAsync(customer);
+    private void SetupBulkCustomers(params (Customer Customer, string ExternalId)[] customers) =>
+        _customerRepositoryMock
+            .Setup(repo => repo.BulkGetOrCreateAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(customers.ToDictionary(item => item.ExternalId, item => item.Customer));
 }
